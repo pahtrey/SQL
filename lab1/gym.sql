@@ -3,6 +3,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 SET NAMES utf8;
+SET collation_connection = 'utf8_general_ci';
 
 /*TABLE `client`*/
 DROP TABLE IF EXISTS `client`;
@@ -96,44 +97,44 @@ INSERT INTO `service` VALUES
 ('5', 'Зумба'),
 ('6', 'Персональные тренировки');
 
-/*TABLE `service_rate`*/
-DROP TABLE IF EXISTS `service_rate`;
-CREATE TABLE `service_rate`
+/*TABLE `service_tariff`*/
+DROP TABLE IF EXISTS `service_tariff`;
+CREATE TABLE `service_tariff`
 (
-  `service_rate_id` INT(11)      NOT NULL AUTO_INCREMENT,
-  `name`            VARCHAR(255) NOT NULL,
-  `service_id`      INT(11)      NOT NULL,
-  `price`           INT(11)      NOT NULL,
-  `count_visits`    INT(11)      NOT NULL,
-  PRIMARY KEY (`service_rate_id`)
+  `service_tariff_id` INT(11)      NOT NULL AUTO_INCREMENT,
+  `name`              VARCHAR(255) NOT NULL,
+  `service_id`        INT(11)      NOT NULL,
+  `price`             INT(11)      NOT NULL,
+  `count_visits`      INT(11)      NOT NULL,
+  PRIMARY KEY (`service_tariff_id`)
 ) DEFAULT CHARSET = utf8;
 
-INSERT INTO `service_rate` VALUES
+INSERT INTO `service_tariff` VALUES
 ('1', 'Стандартный', '1', '1000', '8'),
 ('2', 'Продвинутый', '1', '1350', '12'),
 ('3', 'Профессиональный', '1', '1800', '16'),
-('4', 'Сайкл стандартный', '2', '1500', '8'),
-('5', 'Пилатес стандартный', '3', '1200', '6'),
-('6', 'Йога стандартный', '4', '1350', '12'),
-('7', 'Зумба стандартный', '5', '1350', '9'),
+('4', 'Сайкл лайт', '2', '1500', '8'),
+('5', 'Пилатес', '3', '1200', '6'),
+('6', 'Фитнес йога', '4', '1350', '12'),
+('7', 'Детская зумба', '5', '1350', '9'),
 ('8', 'Стандартный', '6', '5000', '12');
 
 /*TABLE `card_service`*/
-DROP TABLE IF EXISTS `card_service_rate`;
-CREATE TABLE `card_service_rate`
+DROP TABLE IF EXISTS `card_service_tariff`;
+CREATE TABLE `card_service_tariff`
 (
-  `card_id`    INT(11) NOT NULL,
-  `service_rate_id` INT(11) NOT NULL,
-  PRIMARY KEY (`card_id`, `service_rate_id`),
+  `card_id`           INT(11) NOT NULL,
+  `service_tariff_id` INT(11) NOT NULL,
+  PRIMARY KEY (`card_id`, `service_tariff_id`),
   FOREIGN KEY (`card_id`)
     REFERENCES `card` (`card_id`)
     ON DELETE CASCADE,
-  FOREIGN KEY (`service_rate_id`)
-    REFERENCES `service_rate` (`service_rate_id`)
+  FOREIGN KEY (`service_tariff_id`)
+    REFERENCES `service_tariff` (`service_tariff_id`)
     ON DELETE CASCADE
 ) DEFAULT CHARSET = utf8;
 
-INSERT INTO `card_service_rate` VALUES
+INSERT INTO `card_service_tariff` VALUES
 ('1', '2'),
 ('2', '1'),
 ('3', '2'),
@@ -197,24 +198,24 @@ INSERT INTO `service_coach` VALUES
 DROP TABLE IF EXISTS `visit`;
 CREATE TABLE `visit`
 (
-  `visit_id`   INT(11) NOT NULL AUTO_INCREMENT,
-  `card_id`    INT(11) NOT NULL,
-  `service_id` INT(11) NOT NULL,
-  `date`       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `visit_id`          INT(11) NOT NULL AUTO_INCREMENT,
+  `client_id`         INT(11) NOT NULL,
+  `service_tariff_id` INT(11) NOT NULL,
+  `visit_date`        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(`visit_id`)
 ) DEFAULT CHARSET = utf8;
 
 INSERT INTO `visit` VALUES
 ('1', '1', '1', '2017-01-07 18:20:00'),
-('2', '2', '1', '2017-01-07 18:20:01'),
+('2', '3', '1', '2017-01-07 18:20:01'),
 ('3', '3', '1', '2017-01-07 18:20:02'),
-('4', '4', '1', '2017-01-10 17:20:00'),
+('4', '2', '1', '2017-01-10 17:20:00'),
 ('5', '5', '1', '2017-02-05 17:20:10'),
 ('6', '6', '1', '2017-02-05 18:20:11'),
-('7', '7', '1', '2017-02-10 16:20:00'),
-('8', '8', '1', '2017-02-10 16:20:01'),
-('9', '9', '1', '2017-02-10 17:45:00'),
-('10', '10', '1', '2017-02-18 18:30:00'),
-('11', '11', '1', '2017-02-18 18:25:00');
+('7', '1', '1', '2017-02-10 16:20:00'),
+('8', '2', '1', '2017-02-10 16:20:01'),
+('9', '6', '1', '2017-02-10 17:45:00'),
+('10', '2', '1', '2017-02-18 18:30:00'),
+('11', '1', '1', '2017-02-18 18:25:00');
 
 SET FOREIGN_KEY_CHECKS = 1;
