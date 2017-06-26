@@ -125,23 +125,20 @@ SELECT
 	game.match_date,
     team.name,
 	SUM( CASE WHEN goal.team_id = (SELECT team.id FROM team WHERE team.code = "GER") THEN 2 WHEN goal.team_id != (SELECT team.id FROM team WHERE team.code = "GER") THEN -1 ELSE 0 END ) as count
-  FROM
+FROM
     game 	
-	INNER JOIN team ON game.team1 = team.id
-	INNER JOIN goal ON game.id = goal.match_id
-  WHERE
-    game.id = goal.match_id
-	AND game.team2 = (SELECT team.id FROM team WHERE team.code = "GER")	
+INNER JOIN team ON game.team1 = team.id
+INNER JOIN goal ON game.id = goal.match_id
+WHERE
+    game.id = goal.match_id AND game.team2 = (SELECT team.id FROM team WHERE team.code = "GER")	
 UNION DISTINCT
-  SELECT
+SELECT
 	game.match_date,
     team.name,
 	SUM( CASE WHEN goal.team_id = (SELECT team.id FROM team WHERE team.code = "GER") THEN 2 WHEN goal.team_id != (SELECT team.id FROM team WHERE team.code = "GER") THEN -1 ELSE 0 END ) as count
-  FROM
+FROM
     game 	
-	INNER JOIN team ON game.team2 = team.id
-	INNER JOIN goal ON game.id = goal.match_id
-  WHERE
-    game.id = goal.match_id
-	AND game.team1 = (SELECT team.id FROM team WHERE team.code = "GER")
+INNER JOIN team ON game.team2 = team.id
+INNER JOIN goal ON game.id = goal.match_id
+WHERE game.id = goal.match_id AND game.team1 = (SELECT team.id FROM team WHERE team.code = "GER")
 GROUP BY game.id ASC;
