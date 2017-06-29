@@ -30,10 +30,10 @@
 			<td>Голос</td>
 			<td colspan="3">Элементы управления</td>
 		</tr>
-		<?php foreach ($peoples as $people => $rating) :?>
+		<?php foreach ($peoples as $people) :?>
 		<tr>
-			<td><?= $people; ?></td>
-			<td><?= $rating;?></td>
+			<td><?= $people ?></td>
+			<td><?= $redis->zScore($key, $people); ?></td>
 			<td><a href="app.php?action=increment&name=<?= $people; ?>">Добавить голос</a></td>
 			<td><a href="app.php?action=decrement&name=<?= $people; ?>">Отобрать голос</a></td>
 			<td><a href="app.php?action=delete&name=<?= $people; ?>">Удалить участника</a></td>

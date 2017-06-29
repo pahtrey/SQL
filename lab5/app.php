@@ -16,25 +16,20 @@
         $name = $_GET["name"];
     }
 
-
     switch ($action) {
         case 'new':
-            $redis->hmset($key, [
-                $name => 0
-            ]);
+            $redis->zAdd($key, 0, $name);
             break;
         case 'increment':
-            $redis->hincrby($key, $name, 1);
+            $redis->zIncrBy($key, 1, $name);
             break;
         case 'decrement':
-            //$oldValue = $redis->hget($key, $fio);
-            $redis->hset($key, $name, $redis->hget($key, $name) - 1);
+             $redis->zIncrBy($key, -1, $name);
             break;
         case 'delete':
-            $redis->hdel($key, $name);
+            $redis->zRem($key, $name);
         default:
             break;
     }
-
     header("Location: http://redislab.localhost:8000/index.php");
     die();

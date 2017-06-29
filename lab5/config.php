@@ -6,5 +6,4 @@
 		"host" => "redis-18881.c12.us-east-1-4.ec2.cloud.redislabs.com",
 		"port" => 18881));
 	$key = 'peoples';
-	$peoples = $redis->hgetall($key);
-	arsort($peoples);
+	$peoples = $redis->zRange($key, 0, -1);
