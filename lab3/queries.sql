@@ -76,19 +76,20 @@ ON
 SELECT DISTINCT
 	goal.player
 FROM
-	game
-	#TODO:
-INNER JOIN
 	goal
-ON
-	game.id=goal.match_id AND (game.team1=5 OR game.team2=5) AND (goal.team_id!=5);
+INNER JOIN
+	game ON (game.team1 = goal.team_id OR game.team2 = goal.team_id)
+INNER JOIN
+	team ON (team.id = game.team2 OR team.id = game.team1) AND goal.team_id != team.id
+WHERE
+	team.name = "Germany";
 
 /*8*/
 SELECT
 	COUNT(goal.id) as 'count goal', team.name
 FROM
 	team
-INNER JOIN
+LEFT JOIN
 	goal
 ON
 	team.id=goal.team_id
@@ -100,7 +101,7 @@ SELECT
 	COUNT(goal.id) as 'count goal', game.stadium
 FROM
 	game
-INNER JOIN
+LEFT JOIN
 	goal
 ON
 	game.id=goal.match_id
@@ -110,10 +111,10 @@ GROUP BY
 /*10*/
 SELECT
 	team.name,
-	GROUP_CONCAT(DISTINCT goal.player SEPARATOR ', ')
+	GROUP_CONCAT(DISTINCT goal.player SEPARATOR ', ') as players
 FROM
 	goal
-INNER JOIN
+RIGHT JOIN
 	team
 ON
 	goal.team_id=team.id
@@ -123,22 +124,13 @@ GROUP BY
 /*11*/
 SELECT
 	game.match_date,
-    team.name,
-	SUM( CASE WHEN goal.team_id = (SELECT team.id FROM team WHERE team.code = "GER") THEN 2 WHEN goal.team_id != (SELECT team.id FROM team WHERE team.code = "GER") THEN -1 ELSE 0 END ) as count
+    t2.name,
+	SUM( CASE WHEN goal.team_id = t1.id THEN 2 WHEN goal.team_id != t1.id THEN -1 ELSE 0 END ) as score
 FROM
-    game 	
-INNER JOIN team ON game.team1 = team.id
-INNER JOIN goal ON game.id = goal.match_id
+    game
+LEFT JOIN goal ON goal.match_id = game.id
+LEFT JOIN team as t1 ON (game.team2 = t1.id OR game.team1 = t1.id) AND t1.name = "Germany"
+LEFT JOIN team as t2 ON (game.team2 = t2.id OR game.team1 = t2.id) AND t2.name != "Germany"
 WHERE
-    game.id = goal.match_id AND game.team2 = (SELECT team.id FROM team WHERE team.code = "GER")	
-UNION DISTINCT
-SELECT
-	game.match_date,
-    team.name,
-	SUM( CASE WHEN goal.team_id = (SELECT team.id FROM team WHERE team.code = "GER") THEN 2 WHEN goal.team_id != (SELECT team.id FROM team WHERE team.code = "GER") THEN -1 ELSE 0 END ) as count
-FROM
-    game 	
-INNER JOIN team ON game.team2 = team.id
-INNER JOIN goal ON game.id = goal.match_id
-WHERE game.id = goal.match_id AND game.team1 = (SELECT team.id FROM team WHERE team.code = "GER")
-GROUP BY game.id ASC;
+    game.id = goal.match_id AND goal.team_id = t1.id 
+GROUP BY game.id;
